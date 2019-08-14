@@ -164,7 +164,7 @@ Pytorch Integration Section
 '''
 t1 = time.time()
 
-train_df, eval_df = gen_train_eval_data(pd.read_csv('ranktest/features/' + file_name + '_feat16.csv'))
+train_df, eval_df = gen_train_eval_data(pd.read_csv('feat/features/' + file_name + '_feat16.csv'))
 #normalizing_func = lambda x: (x-np.mean(x, axis=0))/np.std(x, axis=0)
 def normalizing_func(x):
     stdev = np.std(x, axis=0)

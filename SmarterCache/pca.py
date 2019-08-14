@@ -18,44 +18,6 @@ damp_factor = med_q3 / 1.5
 
 def avg_fut_rd(vtime):
     return med_q3
-    
-
-# TODO: Implement the vtime of the request; probably use the head of each feature vector?
-class CacheNet(nn.Module):
-
-    N_TRUE_FEATURES = 14
-
-    def __init__(self, p=0.0):
-        super(CacheNet, self).__init__()
-        self.in_layer = nn.Linear(self.N_TRUE_FEATURES, 64)
-        self.in_drop = nn.Dropout(p=p)
-        #self.h1_layer = nn.Linear(1024,256)
-        #self.h1_drop = nn.Dropout(p=p)
-        #self.h2_layer = nn.Linear(64,40)
-        #self.h2_drop = nn.Dropout(p=p)
-        self.h3_layer = nn.Linear(64,32)
-        self.h3_drop = nn.Dropout(p=p)
-        self.h4_layer = nn.Linear(32,10)
-        self.h4_drop = nn.Dropout(p=p)
-        self.out_layer = nn.Linear(10,1)
-
-    # Head of feature vector is the virtual time (column 0)
-    def forward(self, inputs):
-        #inputs = inputs[:, 1:]
-        inputs = self.in_layer(inputs)
-        #inputs = F.relu(self.h1_layer(inputs))
-        #inputs = self.h1_drop(inputs)
-        #inputs = F.relu(self.h2_layer(inputs))
-        #inputs = self.h2_drop(inputs)
-        inputs = F.relu(self.h3_layer(inputs))
-        inputs = self.h3_drop(inputs)
-        inputs = F.relu(self.h4_layer(inputs))
-        inputs = self.h4_drop(inputs)
-        inputs = self.out_layer(inputs)
-        output = inputs
-
-        return output
-
 
 '''
 Data Processing Section
@@ -141,7 +103,7 @@ Pytorch Integration Section
 '''
 t1 = time.time()
 
-df = gen_data(pd.read_csv('ranktest/features/' + file_name + '_feat16.csv'))
+df = gen_data(pd.read_csv('feat/features/' + file_name + '_feat16.csv'))
 #normalizing_func = lambda x: (x-np.mean(x, axis=0))/np.std(x, axis=0)
 def normalizing_func(x):
     stdev = np.std(x, axis=0)
