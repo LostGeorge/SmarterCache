@@ -26,6 +26,13 @@ git clone https://github.com/LostHerro/SmarterCache.git
 ```
 
 ## Functionality
+
+#### Sample Workload
+[Here](https://mega.nz/#!YK4gAAoa!5foJUiiy75CWf2matOiLJOm_gl2kZgqbp-bkxLw_5dU) is
+a sample workload with features to work with. Put this in the
+[features](SmarterCache/feat/features) folder to start using SmarterCache. If you
+wish to use your own workload, reference the next section.
+
 #### Generating Features
 We require that all traces be in any text format with each row being a request and
 the columns separated by a regular expression. To generate the features for a trace, 
@@ -81,6 +88,10 @@ than linearly with workload size.**
 The hit ratio curve for the cache will the saved in 
 [SmarterCache/eval/hrc](SmarterCache/eval/hrc)
 
+Here is the hit ratio curve for the trace example provided. Note the performance
+increase.
+![HRC Example](example/example_HRC.png)
+
 #### Model Evaluation
 Evaluating SmarterCache's predictions is quite simple. First noting that
 SmarterCache's output is the time from the present until future access for a
@@ -93,6 +104,9 @@ python3 shap_analysis.py [TRACE_NAME] [NORMALIZATION_CONSTANT]
 Two SHAP value plots will be saved, one with normal scale and the other with log
 scale. One excel file containing statistics for the SHAP values will be generated
 as well. These can be found in [SmarterCache/eval/shap](SmarterCache/eval/shap).
+
+Here is the log shap vvalues for the trace example provided.
+![SHAP Log Example](example/example_shap_IMG_log.png)
 
 ## Addendum
 To be done later.
