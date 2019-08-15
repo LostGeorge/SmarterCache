@@ -1,4 +1,6 @@
-/SmarterCache/feat/features
-/SmarterCache/feat/traces
-/SmarterCache/nohup.out
-/.vscode
+SmarterCache/feat/features/*
+!SmarterCache/feat/features/.gitkeep
+SmarterCache/feat/traces/*
+!SmarterCache/feat/traces/.gitkeep
+SmarterCache/nohup.out
+.vscode
