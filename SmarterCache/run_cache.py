@@ -31,8 +31,6 @@ def avg_fut_rd(vtime):
     return med_q3
     
 
-
-# TODO: Implement the vtime of the request; probably use the head of each feature vector?
 class CacheNet(nn.Module):
 
     N_TRUE_FEATURES = 14
@@ -51,7 +49,6 @@ class CacheNet(nn.Module):
         self.h4_drop = nn.Dropout(p=p)
         self.out_layer = nn.Linear(10,1)
 
-    # Head of feature vector is the virtual time (column 0)
     def forward(self, inputs):
         #inputs = inputs[:, 1:]
         inputs = self.in_layer(inputs)
@@ -171,7 +168,7 @@ Pytorch Integration Section
 '''
 t1 = time.time()
 
-train_df, eval_df = gen_train_eval_data(pd.read_csv('feat/features/' + file_name + '_feat16.csv'))
+train_df, eval_df = gen_train_eval_data(pd.read_csv('feat/features/' + file_name + '_.csv'))
 #normalizing_func = lambda x: (x-np.mean(x, axis=0))/np.std(x, axis=0)
 def normalizing_func(x):
     stdev = np.std(x, axis=0)

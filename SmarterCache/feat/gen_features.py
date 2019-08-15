@@ -135,7 +135,7 @@ def main():
     
     file_name = sys.argv[1]
     output_add_on = sys.argv[2]
-    source_file = 'traces/shared/' + file_name
+    source_file = 'traces/' + file_name
     target_dest = 'features/' + file_name + '_' + output_add_on + '.csv'
 
     col_names = ['time', 'id']

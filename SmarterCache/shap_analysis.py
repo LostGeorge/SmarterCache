@@ -32,7 +32,6 @@ def avg_fut_rd(vtime):
     
 
 
-# TODO: Implement the vtime of the request; probably use the head of each feature vector?
 class CacheNet(nn.Module):
 
     N_TRUE_FEATURES = 14
@@ -51,7 +50,6 @@ class CacheNet(nn.Module):
         self.h4_drop = nn.Dropout(p=p)
         self.out_layer = nn.Linear(10,1)
 
-    # Head of feature vector is the virtual time (column 0)
     def forward(self, inputs):
         #inputs = inputs[:, 1:]
         inputs = self.in_layer(inputs)
