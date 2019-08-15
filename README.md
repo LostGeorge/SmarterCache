@@ -29,7 +29,7 @@ git clone https://github.com/LostHerro/SmarterCache.git
 #### Generating Features
 We require that all traces be in any text format with each row being a request and
 the columns separated by a regular expression. To generate the features for a trace, 
-add the desired trace into the folder [SmarterCache/feat/traces/](SmarterCache/feat/traces/).
+add the desired trace into the folder [SmarterCache/feat/traces](SmarterCache/feat/traces).
 Peek at the trace using some tool to find which 0-indexed columns have the system time and the
 id of the request item, along with how the columns are divided. Now go to 
 [gen_features.py](SmarterCache/feat/gen_features.py) and edit line 141 and 144 so that
