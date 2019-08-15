@@ -55,7 +55,7 @@ sufficient. If you wish to alter these, go ahead and dig into the
 [run_cache.py](SmarterCache/run_cache.py) file.
 
 For other algorithms to compare SmarterCache to, PyMimircache is used. Go to line
-317 of the [run_cache.py](SmarterCache/run_cache.py) file, and add whichever algorithms
+319 of the [run_cache.py](SmarterCache/run_cache.py) file, and add whichever algorithms
 found in PyMimircache that are desired. By default we have
 ```
 comparison_lst = ['Optimal', 'LRU', 'LFU', 'Random', 'SLRU', 'ARC']
