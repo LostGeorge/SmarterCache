@@ -32,7 +32,7 @@ the columns separated by a regular expression. To generate the features for a tr
 add the desired trace into the folder [SmarterCache/feat/traces](SmarterCache/feat/traces).
 Peek at the trace using some tool to find which 0-indexed columns have the system time and the
 id of the request item, along with how the columns are divided. Now go to 
-[gen_features.py](SmarterCache/feat/gen_features.py) and edit line 141 and 144 so that
+[gen_features.py](SmarterCache/feat/gen_features.py) and edit line 142 and 145 so that
 ```
 col_names = ['time', 'id'] # if the system time column comes first
 col_names = ['id', 'time'] # if the request id column comes first
@@ -55,7 +55,7 @@ sufficient. If you wish to alter these, go ahead and dig into the
 [run_cache.py](SmarterCache/run_cache.py) file.
 
 For other algorithms to compare SmarterCache to, PyMimircache is used. Go to line
-328 of the [run_cache.py](SmarterCache/run_cache.py) file, and add whichever algorithms
+317 of the [run_cache.py](SmarterCache/run_cache.py) file, and add whichever algorithms
 found in PyMimircache that are desired. By default we have
 ```
 comparison_lst = ['Optimal', 'LRU', 'LFU', 'Random', 'SLRU', 'ARC']

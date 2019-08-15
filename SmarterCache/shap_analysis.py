@@ -15,23 +15,21 @@ from shap import DeepExplainer
 from shap import summary_plot
 
 
-
 '''
-Initial Stuff
+Initial I/O Parameters and Train/Test Split
 '''
 
 file_name = sys.argv[1]
 
 train_factor = random.uniform(0.6, 0.7)
 
-med_q3 = int(sys.argv[2])
-damp_factor = med_q3 / 1.5
-
-def avg_fut_rd(vtime):
-    return med_q3
+sig_cent = int(sys.argv[2])
+damp_factor = sig_cent / 1.5
     
 
-
+'''
+Neural Network Definition
+'''
 class CacheNet(nn.Module):
 
     N_TRUE_FEATURES = 14
@@ -40,10 +38,6 @@ class CacheNet(nn.Module):
         super(CacheNet, self).__init__()
         self.in_layer = nn.Linear(self.N_TRUE_FEATURES, 64)
         self.in_drop = nn.Dropout(p=p)
-        #self.h1_layer = nn.Linear(1024,256)
-        #self.h1_drop = nn.Dropout(p=p)
-        #self.h2_layer = nn.Linear(64,40)
-        #self.h2_drop = nn.Dropout(p=p)
         self.h3_layer = nn.Linear(64,32)
         self.h3_drop = nn.Dropout(p=p)
         self.h4_layer = nn.Linear(32,10)
@@ -51,12 +45,7 @@ class CacheNet(nn.Module):
         self.out_layer = nn.Linear(10,1)
 
     def forward(self, inputs):
-        #inputs = inputs[:, 1:]
         inputs = self.in_layer(inputs)
-        #inputs = F.relu(self.h1_layer(inputs))
-        #inputs = self.h1_drop(inputs)
-        #inputs = F.relu(self.h2_layer(inputs))
-        #inputs = self.h2_drop(inputs)
         inputs = F.relu(self.h3_layer(inputs))
         inputs = self.h3_drop(inputs)
         inputs = F.relu(self.h4_layer(inputs))
@@ -66,12 +55,12 @@ class CacheNet(nn.Module):
 
         return output
 
-
 '''
 Data Processing Section
 '''
-N_FEATURES = 19 #???? idk
+N_FEATURES = 19
 
+# Returns array of next access distances for each index in trace
 def get_next_access_dist(id_ser, dummy_length):
 
     reverse_data = deque()
@@ -91,35 +80,33 @@ def get_next_access_dist(id_ser, dummy_length):
     next_access_dist.reverse()
     return next_access_dist
 
-
+# General Purpose Function to Create DataFrame
 def create_dist_df(feature_df, samples, dists, start_time, eval=False):
 
     # Returns logistic virtual distance since t_now (sigmoid)
     def get_logit_dist(next_access_dist, timestamp, delta):
-
-        if next_access_dist != -1:
-            return 1/(1 + np.exp(-(next_access_dist - delta
-                 - avg_fut_rd(timestamp))/damp_factor))
-        else: # return 1
-            return 1
+        return 1/(1 + np.exp(-(next_access_dist - delta
+                - sig_cent)/damp_factor))
 
     
     train_data = []
     for t in samples:
-        
-        #delta = int(random.random() * dists[t - start_time])
+        # Sample from linear decay
         delta = int(random.random()**2 * dists[t - start_time])
         
         if delta + t < len(feature_df) + start_time:
             if not eval:
                 logit_dist_val = get_logit_dist(dists[t], t, delta)
             else:
-                logit_dist_val = 0 # dummy value
+                logit_dist_val = 0 # dummy value for evaluation
 
             ser = feature_df.loc[t].to_list()
+
+            # Check previous reuse distances for dummy 0 value (no previous reuse).
+            # Update to large value based on sigmoid center.
             for i in range(5,10):
                 if ser[i] == 0:
-                    ser[i] = med_q3*20
+                    ser[i] = sig_cent*20
             ser += [delta] + [logit_dist_val]
             train_data.append(ser)
 
@@ -128,11 +115,11 @@ def create_dist_df(feature_df, samples, dists, start_time, eval=False):
 
     return full_df
 
+# Generates Training and Evaulation Data
 def gen_train_eval_data(df):
 
     df = df.iloc[int(0.05*df.shape[0]):int(0.95*df.shape[0])].reset_index(drop=True)
     df_len = df.shape[0]
-    #df.insert(loc=2, column='vtime', value=df.index)
     
     tc = time.time()
     n_samples = max(500000, int(df_len * train_factor/5))
@@ -163,7 +150,9 @@ Pytorch Integration Section
 t1 = time.time()
 
 train_df, eval_df = gen_train_eval_data(pd.read_csv('feat/features/' + file_name + '_feat16.csv'))
-#normalizing_func = lambda x: (x-np.mean(x, axis=0))/np.std(x, axis=0)
+
+# Normalizes np.ndarray-like Feature Matrix to have Mean 0 and 
+# Variance 1 over Each Feature
 def normalizing_func(x):
     stdev = np.std(x, axis=0)
     ret = np.zeros(x.shape, dtype='float64')
@@ -193,15 +182,15 @@ optimizer = optim.Adam(model.parameters(), lr=0.04)
 
 lambda1 = lambda epoch: 0.99
 scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
-#train_feat = torch.randn(len(train_target), 34)
 
 model.train()
 print(train_target)
 
+# Training Loop
 for t in range(400):
     # Forward Pass
     y_pred = model(train_feat)
-    y_pred = torch.sigmoid((y_pred - med_q3)/damp_factor)
+    y_pred = torch.sigmoid((y_pred - sig_cent)/damp_factor)
 
     # Loss
     loss = criterion(y_pred, train_target)
@@ -222,7 +211,7 @@ with torch.no_grad():
     model.eval()
     # Training Score
     y_pred = model(train_feat)
-    y_pred = torch.sigmoid((y_pred - med_q3)/damp_factor)
+    y_pred = torch.sigmoid((y_pred - sig_cent)/damp_factor)
     print('Training Score:')
     print(criterion(y_pred, train_target))
     print(y_pred)  

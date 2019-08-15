@@ -107,6 +107,7 @@ def generate_features(df, sample=0, hexadecimal=False):
     for i in range(5):
         freq_arr[:,i] /= freq_size_lst[i]
 
+    # Uncomment this if system time is nanosecondsd for some weird reason.
     """ df['time'] = df['time'].apply(
         lambda x: x / 1e6
     ) """
@@ -141,9 +142,8 @@ def main():
     col_names = ['time', 'id']
     data_types = {'time': 'float64', 'id': 'str'}
 
-    df = pd.read_csv(source_file, sep='\s+', usecols=[0,4], header=0, names=col_names, dtype=data_types
-        #,nrows=10000
-        )
+    df = pd.read_csv(source_file, sep='\s+', usecols=[0,4], header=0, 
+        names=col_names, dtype=data_types)
     
     ta = time.time()
     print('Generating Features for ' + source_file + ':')
