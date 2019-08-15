@@ -3,4 +3,7 @@ SmarterCache/feat/features/*
 SmarterCache/feat/traces/*
 !SmarterCache/feat/traces/.gitkeep
 SmarterCache/nohup.out
+SmarterCache/eval/hrc/*
+SmarterCache/eval/shap/*
+SmarterCache/eval/pca/*
 .vscode
