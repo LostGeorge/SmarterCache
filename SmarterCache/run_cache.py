@@ -205,9 +205,9 @@ for t in range(400):
 
     # Loss
     loss = criterion(y_pred, train_target)
-    if (t % 10 == 0):
-        print(t, loss.item())
     if (t % 20 == 0):
+        print(t, loss.item())
+    if (t % 40 == 0):
         print(y_pred)
 
     # Backward Pass And Update
@@ -289,7 +289,6 @@ with torch.no_grad():
     for cache_size in cache_sizes:
         cache = {}
         n_hits = 0
-        print(cache_size)
         for ts, ident in enumerate(eval_ids):
             if ident in cache:
                 n_hits += 1
@@ -300,7 +299,7 @@ with torch.no_grad():
                     # Eviction Process
                     eviction_process(cache, int(cache_size/50), int(cache_size/500), ts)
 
-
+        print(cache_size, str(n_hits / length))
 
         hit_ratios.append(n_hits / length)    
 
@@ -325,6 +324,10 @@ hit_ratio_dicts = [c.get_hit_ratio_dict(comparison_alg, cache_size=max_cache_siz
 comp_x = [sorted(list(hr_dict.keys())) for hr_dict in hit_ratio_dicts]
 comp_hr = [sorted(list(hr_dict.values())) for hr_dict in hit_ratio_dicts]
 ml_x = cache_sizes
+
+print(comparison_lst)
+print(comp_x)
+print(comp_hr)
 
 plt.figure(0)
 
