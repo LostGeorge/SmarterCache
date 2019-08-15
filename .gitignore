@@ -9,4 +9,6 @@ SmarterCache/eval/shap/*
 !SmarterCache/eval/shap/.gitkeep
 SmarterCache/eval/pca/*
 !SmarterCache/eval/pca/.gitkeep
+SmarterCache/temporary/*
+!SmarterCache/temporary/.gitkeep
 .vscode
