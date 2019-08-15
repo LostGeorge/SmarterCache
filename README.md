@@ -67,7 +67,7 @@ curve. We recommend using normalization constant = maximum cache size, but for
 very large or very small maximum cache sizes, it could be better to make the
 normalization constant repsectively smaller or greater than the maximum.
 
-Now finally, to actually run SmarterCache, go to the [Smartercache](Smartercache)
+Now finally, to actually run SmarterCache, go to the [SmarterCache](SmarterCache)
 folder, and do
 ```
 python3 run_cache.py [TRACE_NAME] [NORMALIZATION_CONSTANT] [MAXIMUM_CACHE_SIZE]
@@ -79,20 +79,20 @@ Runtimes for workloads of size 1.5 million are about 2 hours, and scale slightly
 than linearly with workload size.**
 
 The hit ratio curve for the cache will the saved in 
-[Smartercache/eval/hrc](Smartercache/eval/hrc)
+[SmarterCache/eval/hrc](SmarterCache/eval/hrc)
 
 #### Model Evaluation
 Evaluating SmarterCache's predictions is quite simple. First noting that
 SmarterCache's output is the time from the present until future access for a
 cache item, the SHAP values plot provides a way to see how various features
-values contribute towards the model output. From the [Smartercache](Smartercache)
+values contribute towards the model output. From the [SmarterCache](SmarterCache)
 folder, run
 ```
 python3 shap_analysis.py [TRACE_NAME] [NORMALIZATION_CONSTANT]
 ```
 Two SHAP value plots will be saved, one with normal scale and the other with log
 scale. One excel file containing statistics for the SHAP values will be generated
-as well. These can be found in [Smartercache/eval/shap](Smartercache/eval/shap).
+as well. These can be found in [SmarterCache/eval/shap](SmarterCache/eval/shap).
 
 ## Addendum
 To be done later.
