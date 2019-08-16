@@ -20,12 +20,40 @@ Initial I/O Parameters and Train/Test Split
 '''
 
 file_name = sys.argv[1]
+df = pd.read_csv('feat/features/' + file_name + '_.csv')
+
+df = df.iloc[int(0.05*df.shape[0]):int(0.95*df.shape[0])].reset_index(drop=True)
+
+# Returns array of next access distances for each index in trace
+def get_next_access_dist(id_ser, dummy_length):
+
+    reverse_data = deque()
+    next_access_dist = []
+    next_access_time = {}
+
+    for req in id_ser:
+        reverse_data.appendleft(req)
+
+    for index, req in enumerate(reverse_data):
+        if req in next_access_time:
+            next_access_dist.append(index - next_access_time[req])
+        else:
+            next_access_dist.append(dummy_length)
+        next_access_time[req] = index
+    
+    next_access_dist.reverse()
+    return next_access_dist
 
 train_factor = random.uniform(0.6, 0.7)
 
-sig_cent = int(sys.argv[2])
+train_dists = get_next_access_dist(df.loc[:int(train_factor * len(df)), 'id'], len(df))
+eval_dists = get_next_access_dist(df.loc[int(train_factor * len(df)):, 'id'], len(df))
+
+sig_cent = np.percentile(train_dists, 75.0)
 damp_factor = sig_cent / 1.5
-    
+
+#sig_cent = int(sys.argv[2])
+#damp_factor = sig_cent / 1.5
 
 '''
 Neural Network Definition
@@ -59,26 +87,6 @@ class CacheNet(nn.Module):
 Data Processing Section
 '''
 N_FEATURES = 19
-
-# Returns array of next access distances for each index in trace
-def get_next_access_dist(id_ser, dummy_length):
-
-    reverse_data = deque()
-    next_access_dist = []
-    next_access_time = {}
-
-    for req in id_ser:
-        reverse_data.appendleft(req)
-
-    for index, req in enumerate(reverse_data):
-        if req in next_access_time:
-            next_access_dist.append(index - next_access_time[req])
-        else:
-            next_access_dist.append(dummy_length)
-        next_access_time[req] = index
-    
-    next_access_dist.reverse()
-    return next_access_dist
 
 # General Purpose Function to Create DataFrame
 def create_dist_df(feature_df, samples, dists, start_time, eval=False):
@@ -116,17 +124,16 @@ def create_dist_df(feature_df, samples, dists, start_time, eval=False):
     return full_df
 
 # Generates Training and Evaulation Data
-def gen_train_eval_data(df):
+def gen_train_eval_data(df, train_dists, eval_dists):
 
-    df = df.iloc[int(0.05*df.shape[0]):int(0.95*df.shape[0])].reset_index(drop=True)
     df_len = df.shape[0]
     
     tc = time.time()
+
     n_samples = max(500000, int(df_len * train_factor/5))
 
     time_samples = np.random.randint(0, int(train_factor * df_len), size=n_samples)
     learn_data = df.iloc[:int(train_factor * df_len)]
-    train_dists = get_next_access_dist(learn_data['id'], df_len)
     
     train_df = create_dist_df(learn_data, time_samples, train_dists, 0)
 
@@ -135,7 +142,6 @@ def gen_train_eval_data(df):
 
     time_samples = list(range(int(train_factor * df_len), df_len))
     eval_data = df.iloc[int(train_factor * df_len):]
-    eval_dists = get_next_access_dist(eval_data['id'], df_len)
 
     eval_df = create_dist_df(eval_data, time_samples, eval_dists, int(train_factor * df_len), eval=True)
 
@@ -149,7 +155,7 @@ Pytorch Integration Section
 '''
 t1 = time.time()
 
-train_df, eval_df = gen_train_eval_data(pd.read_csv('feat/features/' + file_name + '_feat16.csv'))
+train_df, eval_df = gen_train_eval_data(df, train_dists, eval_dists)
 
 # Normalizes np.ndarray-like Feature Matrix to have Mean 0 and 
 # Variance 1 over Each Feature
@@ -178,7 +184,7 @@ eval_feat = torch.tensor(eval_feat, dtype=torch.float)
 
 model = CacheNet(p=0.5)
 criterion = torch.nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.04)
+optimizer = optim.Adam(model.parameters(), lr=0.045)
 
 lambda1 = lambda epoch: 0.99
 scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
