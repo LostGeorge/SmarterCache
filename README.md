@@ -105,7 +105,7 @@ Two SHAP value plots will be saved, one with normal scale and the other with log
 scale. One excel file containing statistics for the SHAP values will be generated
 as well. These can be found in [SmarterCache/eval/shap](SmarterCache/eval/shap).
 
-Here is the log shap vvalues for the trace example provided.
+Here is the log shap values for the trace example provided.
 ![SHAP Log Example](example/example_shap_IMG_log.png)
 
 ## Addendum
