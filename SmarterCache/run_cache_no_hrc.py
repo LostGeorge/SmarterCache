@@ -310,8 +310,12 @@ c.open('temporary/temp_trace_' + file_name + '.txt')
 comparison_lst = ['Optimal', 'LRU', 'LFU', 'Random', 'SLRU', 'ARC']
 
 # Chaining lol
-comparison_hrs = [[c.profiler(alg, cache_size=size).get_hit_count() for size in cache_sizes]
+comparison_hrs = [[c.profiler(alg, cache_size=size).get_hit_ratio() for size in cache_sizes]
     for alg in comparison_lst]
+
+
+comparison_hrs.append(hit_ratios)
+comparison_lst.append('SmarterCache')
 
 comparison_df = pd.DataFrame(data=comparison_hrs, index=comparison_lst,
     columns=cache_sizes)
