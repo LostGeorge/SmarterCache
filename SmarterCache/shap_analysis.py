@@ -278,8 +278,8 @@ shap_values = shap_df.to_numpy().astype('float64')
 summary_plot(shap_values, features=analyses.numpy(), feature_names=col_names)
 
 extra = ''
-if len(sys.argv) > 3:
-    extra = sys.argv[3]
+if len(sys.argv) > 2:
+    extra = sys.argv[2]
 
 plt.savefig('eval/shap/' + file_name + extra + '_IMG.png')
 plt.xscale('symlog')

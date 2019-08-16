@@ -255,8 +255,8 @@ with torch.no_grad():
     print('Time to Train: ', str(t2-t1))
 
     max_cache_size = 40000
-    if len(sys.argv) > 3:
-        max_cache_size = int(sys.argv[3])
+    if len(sys.argv) > 2:
+        max_cache_size = int(sys.argv[2])
 
     # Linear time scan to determine the indices for the n eviction candidates
     def select_indices(eval_lst, n):

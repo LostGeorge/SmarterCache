@@ -323,4 +323,5 @@ comparison_lst.append('SmarterCache')
 
 comparison_df = pd.DataFrame(data=comparison_hrs, index=comparison_lst,
     columns=cache_sizes)
+print(file_name)
 print(comparison_df)
