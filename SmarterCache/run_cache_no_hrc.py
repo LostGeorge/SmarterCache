@@ -10,10 +10,6 @@ from collections import deque
 from PyMimircache import Cachecow
 from heapdict import heapdict
 
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
-
 
 
 '''
@@ -230,10 +226,6 @@ with torch.no_grad():
     t2 = time.time()
     print('Time to Train: ', str(t2-t1))
 
-    max_cache_size = 40000
-    if len(sys.argv) > 3:
-        max_cache_size = int(sys.argv[3])
-
     # Linear time scan to determine the indices for the n eviction candidates
     def select_indices(eval_lst, n):
         ret = heapdict()
@@ -279,10 +271,11 @@ with torch.no_grad():
         for ind in evict_inds:
             del cache_dict[id_lst[ind]]
 
+    cache_sizes = sys.argv[3:]
+    cache_sizes = [int(size) for size in cache_sizes]
 
     # Manually Get Hit Ratios for Model
     length = len(eval_ids)
-    cache_sizes = [i**3 for i in range((int(max_cache_size**(1/3)) + 1))] + [max_cache_size]
     hit_ratios = []
     
     for cache_size in cache_sizes:
@@ -315,30 +308,11 @@ c = Cachecow()
 c.open('temporary/temp_trace_' + file_name + '.txt')
 
 comparison_lst = ['Optimal', 'LRU', 'LFU', 'Random', 'SLRU', 'ARC']
-hit_ratio_dicts = [c.get_hit_ratio_dict(comparison_alg, cache_size=max_cache_size)
-    for comparison_alg in comparison_lst]
 
+# Chaining lol
+comparison_hrs = [[c.profiler(alg, cache_size=size).get_hit_count() for size in cache_sizes]
+    for alg in comparison_lst]
 
-# Inefficient process to convert dict kv pairs to sorted lists but oh well
-comp_x = [sorted(list(hr_dict.keys())) for hr_dict in hit_ratio_dicts]
-comp_hr = [sorted(list(hr_dict.values())) for hr_dict in hit_ratio_dicts]
-ml_x = cache_sizes
-
-
-plt.figure(0)
-
-# Add to figure
-curves = []
-for i in range(len(comp_x)):
-    curves.append(plt.plot(comp_x[i], comp_hr[i])[0])
-ml_curve, = plt.plot(ml_x, hit_ratios)
-
-
-plt.xlabel('Cache Size')
-plt.ylabel('Hit Ratio')
-plt.legend(tuple(curves + [ml_curve]), tuple(comparison_lst + ['\"SmarterCache\"']),
-    loc='lower right', markerscale=1.0)
-plt.savefig('eval/hrc/' + file_name + '_' + str(time.time()) + '.png')
-plt.close()
-
-
+comparison_df = pd.DataFrame(data=comparison_hrs, index=comparison_lst,
+    columns=cache_sizes)
+print(comparison_df)
