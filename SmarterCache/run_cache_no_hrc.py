@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import random, math, time, sys, heapq
+from scipy.stats import skew
 
 from collections import deque
 from PyMimircache import Cachecow
@@ -46,8 +47,12 @@ train_factor = random.uniform(0.6, 0.7)
 train_dists = get_next_access_dist(df.loc[:int(train_factor * len(df)), 'id'], len(df))
 eval_dists = get_next_access_dist(df.loc[int(train_factor * len(df)):, 'id'], len(df))
 
-sig_cent = np.percentile(train_dists, 65.0)
-damp_factor = sig_cent / 1.5
+cache_sizes = sys.argv[2:]
+cache_sizes = [int(size) for size in cache_sizes]
+# For now, this is only one size
+
+sig_cent = (skew(train_dists)**2 + 1) * cache_sizes[0]/2
+damp_factor = sig_cent / 2
 
 #sig_cent = int(sys.argv[2])
 #damp_factor = sig_cent / 1.5
@@ -274,9 +279,6 @@ with torch.no_grad():
         # Do deletions
         for ind in evict_inds:
             del cache_dict[id_lst[ind]]
-
-    cache_sizes = sys.argv[2:]
-    cache_sizes = [int(size) for size in cache_sizes]
 
     # Manually Get Hit Ratios for Model
     length = len(eval_ids)
