@@ -46,7 +46,7 @@ train_factor = random.uniform(0.6, 0.7)
 train_dists = get_next_access_dist(df.loc[:int(train_factor * len(df)), 'id'], len(df))
 eval_dists = get_next_access_dist(df.loc[int(train_factor * len(df)):, 'id'], len(df))
 
-sig_cent = np.percentile(train_dists, 75.0)
+sig_cent = np.percentile(train_dists, 65.0)
 damp_factor = sig_cent / 1.5
 
 #sig_cent = int(sys.argv[2])
@@ -293,7 +293,7 @@ with torch.no_grad():
                 cache[ident] = ts # add to cache
                 if len(cache) > cache_size:
                     # Eviction Process
-                    eviction_process(cache, int(cache_size/50), int(cache_size/500), ts)
+                    eviction_process(cache, int(cache_size/20), int(cache_size/200), ts)
 
         print(cache_size)
 
@@ -314,7 +314,7 @@ c.open('temporary/temp_trace_' + file_name + '.txt')
 comparison_lst = ['Optimal', 'LRU', 'LFU', 'Random', 'SLRU', 'ARC']
 
 # Chaining lol
-comparison_hrs = [[c.profiler(alg, cache_size=size, use_general_profiler=True).get_hit_ratio()[-1]
+comparison_hrs = [[c.profiler(alg, cache_size=size, bin_size=size, use_general_profiler=True).get_hit_ratio()[-1]
     for size in cache_sizes] for alg in comparison_lst]
 
 
