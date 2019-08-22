@@ -51,7 +51,8 @@ cache_sizes = sys.argv[2:]
 cache_sizes = [int(size) for size in cache_sizes]
 # For now, this is only one size
 
-sig_cent = (skew(train_dists)**2 + 1) * cache_sizes[0]/2
+#sig_cent = (1.5*skew(train_dists)**2 + 1) * cache_sizes[0]/2
+sig_cent = np.percentile(train_dists, 65.0)
 damp_factor = sig_cent / 2
 
 #sig_cent = int(sys.argv[2])
