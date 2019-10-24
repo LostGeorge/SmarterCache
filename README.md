@@ -1,5 +1,7 @@
 # SmarterCache
 #### Towards a Generalizable Deep Learning Approach For Cache Replacement
+###### George Hu, Ymir Vigfusson, Jason Yang
+
 SmarterCache is a deep learning framework to emulate optimal cache replacement
 blind to item size. Built using PyTorch, SmarterCache outperforms heuristic
 algorithms such a ARC and SLRU, as well as more basic methods such as LRU and
